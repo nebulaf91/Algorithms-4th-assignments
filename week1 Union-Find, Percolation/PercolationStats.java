@@ -23,7 +23,7 @@ public class PercolationStats{
       return p.numberOfOpenSites() / ((double)dim*dim);
     }
 
-    private void probs(){
+    void probs(){
       int i;
       for(i=0; i<trials; i++){
         probs[i] = prob();
@@ -48,9 +48,9 @@ public class PercolationStats{
       return mean + 1.96 * stddev / Math.sqrt(dim);
     }
 
-    // public void plot(){
-    //   StdStats.plotBars(probs);
-    // }
+    public void plot(){
+      StdStats.plotBars(probs);
+    }
 
     public static void main(String args[]){
       PercolationStats s = new PercolationStats(Integer.parseInt(args[0]),Integer.parseInt(args[1]));

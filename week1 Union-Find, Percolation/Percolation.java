@@ -9,21 +9,19 @@ public class Percolation {
         dim = n;
         grid = new boolean[dim][dim];
         numberOpen = 0;
-        uf = new WeightedQuickUnionUF(dim*dim);
+        // two more special points
+        uf = new WeightedQuickUnionUF(dim*dim + 2);
         int i;
-        for(i = 1; i < dim; i++){
-            uf.union(gridConvertToUF(1, i), gridConvertToUF(1, i+1));
-            uf.union(gridConvertToUF(dim, i), gridConvertToUF(dim, i+1));
-        }
+
+        // //这个逻辑有错 想一来把第一行和最后一行都union了
+        // for(i = 1; i < dim; i++){
+        //     uf.union(gridConvertToUF(1, i), dim*dim);
+        //     uf.union(gridConvertToUF(dim, i), dim*dim + 1);
+        // }
     }
     
     public int numberOfOpenSites(){
         return numberOpen;
-    }
-
-    public boolean isOpen(int row, int col){
-        checkDimension(row, col);
-        return grid[row-1][col-1];
     }
 
     private void checkDimension(int row, int col){
@@ -33,6 +31,11 @@ public class Percolation {
         if (col < 1 || col > dim) {
             throw new IllegalArgumentException("col index out of dimension");  
         }
+    }
+
+    public boolean isOpen(int row, int col){
+        checkDimension(row, col);
+        return grid[row-1][col-1];
     }
 
     private int gridConvertToUF(int row, int col){
@@ -46,6 +49,14 @@ public class Percolation {
         if(isOpen(row, col))
             return;
         grid[row-1][col-1] = true;
+        // first row
+        if(row == 1){
+            uf.union(gridConvertToUF(row, col), dim*dim);
+        }
+        // last row
+        if(row == dim){
+            uf.union(gridConvertToUF(row, col), dim*dim + 1);
+        }
         //left
         if(col > 1 && grid[row-1][col-2]==true){
             uf.union(gridConvertToUF(row, col), gridConvertToUF(row, col-1));
@@ -66,11 +77,11 @@ public class Percolation {
     }
 
     public boolean percolates(){
-        return uf.connected(gridConvertToUF(1, 1), gridConvertToUF(dim, dim));
+        return uf.connected(dim*dim , dim*dim + 1);
     }
 
     public boolean isFull(int row, int col){
-        return uf.connected(gridConvertToUF(row, col), gridConvertToUF(1, 1));
+        return uf.connected(gridConvertToUF(row, col), dim*dim);
     }
 
     public static void main(String[] args){
